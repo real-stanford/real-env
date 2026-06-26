@@ -27,6 +27,7 @@ umi_ur5 = "real_env.tasks.umi_ur5_task:run_umi_ur5_task"
 umi_arx5 = "real_env.tasks.umi_arx5_task:run_umi_arx5_task"
 iphumi_ur5 = "real_env.tasks.iphumi_ur5_task:run_iphumi_ur5_task"
 iphumi_arx5 = "real_env.tasks.iphumi_arx5_task:run_iphumi_arx5_task"
+iphumi_arx5_bimanual = "real_env.tasks.iphumi_arx5_bimanual_task:run_iphumi_arx5_bimanual_task"
 umi_ur5_original = "real_env.tasks.umi_ur5_task:run_umi_ur5_original_task"
 iterative_casting = "real_env.tasks.iterative_casting:run_iterative_casting"
 

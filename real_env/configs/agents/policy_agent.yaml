@@ -12,7 +12,7 @@ image_history_len: 1
 # action_history_len: 2 # Same as this one if `action_as_proprio` is true
 
 policy_server_endpoint: tcp://localhost:18765
-keep_one_step_dummy_proprio: false
+keep_one_step_dummy_proprio: true
 action_as_proprio: true
 use_relative_action: true
 smooth_action_window_size: 1 # Don't smooth actions

@@ -2,7 +2,7 @@ _target_: real_env.controllers.ur5_cartesian.UR5Cartesian
 
 server_endpoint: tcp://localhost:16666
 robot_ip: 192.168.2.124
-logger_endpoint: tcp://localhost:55554
+logger_endpoint: tcp://localhost:45560
 robot_name: right_arm
 dynamic_latency_range_s: 1.0
 tcp_offset_pose: [0.0, 0.0, 0.234, 0.0, 0.0, 0.0] # For WSG50 + fin-ray gripper

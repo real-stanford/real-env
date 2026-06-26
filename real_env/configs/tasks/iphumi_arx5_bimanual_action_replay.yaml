@@ -1,0 +1,12 @@
+defaults:
+  - iphumi_arx5_bimanual
+  - override ../agents@policy_agent: policy_agent_action_replay
+  - _self_
+
+project_name: action_replay
+task_name: action_replay
+run_name: ${now:%Y-%m-%d}_arx5_bimanual_action_replay
+pause_when_policy_inference: true
+
+policy_agent:
+  agent_update_freq_hz: 20

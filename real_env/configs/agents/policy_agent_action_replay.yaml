@@ -1,0 +1,5 @@
+defaults:
+  - policy_agent
+  - _self_
+
+action_execution_horizon: 16  # must equal action_prediction_horizon for replay

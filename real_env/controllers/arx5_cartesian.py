@@ -103,6 +103,8 @@ class ARX5Cartesian(BaseController):
         latency_precision: float,
         latency_pos_weight: float,
         latency_rot_weight: float,
+        cartesian_logger_name: str = "right_arm",
+        joint_logger_name: str = "right_end_effector",
         config_str: str = "",
     ):
         super().__init__(
@@ -147,7 +149,7 @@ class ARX5Cartesian(BaseController):
         self.last_pose_timestamp: float
 
         self.cartesian_logger = RobotCtrlLogger(
-            name="right_arm",
+            name=cartesian_logger_name,
             endpoint=cartesian_logger_endpoint,
             attr={"robot_name": self.robot_name, "ctrl_freq": self.ctrl_freq},
             log_eef_pose=True,
@@ -161,7 +163,7 @@ class ARX5Cartesian(BaseController):
         ), "Failed to initialize cartesian logger"
 
         self.joint_logger = RobotCtrlLogger(
-            name="right_end_effector",
+            name=joint_logger_name,
             endpoint=joint_logger_endpoint,
             attr={
                 "robot_name": self.robot_name,
@@ -273,7 +275,7 @@ class ARX5Cartesian(BaseController):
         print(f"ARX5 reset_to_home time: {end_time - start_time}")
 
         init_gain: arx5.Gain = self.arx5_cartesian_controller.get_gain()
-        init_gain.kp()[:] = np.array([300, 300, 400, 150, 120, 120])
+        init_gain.kp()[:] = self.kp
         init_gain.gripper_kp = 5.0
         self.arx5_cartesian_controller.set_gain(init_gain)
         print(
@@ -516,11 +518,20 @@ class ARX5Cartesian(BaseController):
 def run_arx5_cartesian():
     os.environ["HYDRA_FULL_ERROR"] = "1"
     np.set_printoptions(precision=4)
-    assert len(sys.argv) == 2, "Usage: python run_arx5_cartesian.py <model>"
+    assert len(sys.argv) == 2 or len(sys.argv) == 3, "Usage: python run_arx5_cartesian.py <model> [can_interface"
     model = sys.argv[1]
-    with hydra.initialize(config_path="../configs/controllers"):
-        cfg = hydra.compose(config_name="arx5_cartesian")
-    cfg.model = model
+
+    if model in ["left", "right"]:
+        with hydra.initialize(config_path="../configs/controllers"):
+            cfg = hydra.compose(config_name=f"arx5_{model}")
+    else:
+        with hydra.initialize(config_path="../configs/controllers"):
+            cfg = hydra.compose(config_name="arx5_cartesian")
+        cfg.model = model
+        if len(sys.argv) > 2:
+            cfg.interface_name = f"can{sys.argv[2]}"
+        else:
+            cfg.interface_name = "can0"
     print(cfg)
     OmegaConf.set_struct(cfg, False)
     cfg.config_str = json.dumps(OmegaConf.to_container(cfg, resolve=False))

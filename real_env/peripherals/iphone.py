@@ -87,7 +87,7 @@ class iPhone(BaseCamera):
     def get_images_bgr_hwc_and_timestamp(self) -> tuple[dict[str, MatLike], float]:
         """Captures frames from all iPhone camera streams."""
         frames_dict: dict[str, MatLike] = {}
-        timestamp = time.monotonic()
+        timestamp = time.monotonic() - self.camera_latency_s
 
         for cam_name, client in self.peertalk_clients.items():
             camera_config = self.camera_configs[cam_name]

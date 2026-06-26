@@ -3,7 +3,7 @@ _target_: real_env.controllers.wsg50.WSG50
 robot_ip: 192.168.2.110
 robot_port: 1000
 server_endpoint: tcp://localhost:16667
-logger_endpoint: tcp://localhost:55556
+logger_endpoint: tcp://localhost:45561
 robot_name: right_end_effector
 lookahead_time_s: 0.00
 traj_smooth_time_s: 0.0

@@ -96,6 +96,7 @@ class BaseTask(ABC):
         logger_endpoints: dict[str, str],
         spacemouse_agent: SpacemouseAgent,
         config_str: str = "",
+        morphology: Morphology = Morphology.SINGLE_ARM,
     ):
         self.task_config: dict[str, Any] = json.loads(config_str)
         self.spacemouse_agent: SpacemouseAgent = spacemouse_agent
@@ -112,7 +113,7 @@ class BaseTask(ABC):
             task_name=task_name,
             run_name=run_name,
             logger_endpoints=logger_endpoints,
-            morphology=Morphology.SINGLE_ARM,
+            morphology=morphology,
             success_config="input_false",
         )
 
@@ -172,6 +173,13 @@ class BaseTask(ABC):
                             print("Failed to delete last episode")
                     elif last_terminal_key_name == "e":
                         self.export_data()
+                    elif last_terminal_key_name == "i":
+                        idx = self.main_logger._get_next_episode_idx()
+                        print(f"Next episode: episode_{idx:06d}")
+                    elif last_terminal_key_name == "?":
+                        self.print_key_help()
+                    else:
+                        self.handle_extra_terminal_key(last_terminal_key_name)
 
                 if global_key_name is not None:
                     last_global_key_name = global_key_name
@@ -261,6 +269,38 @@ class BaseTask(ABC):
     @abstractmethod
     def disconnect(self):
         ...
+
+    def extra_key_help(self) -> list[str]:
+        """Override in subclass to append task-specific lines to the key help output."""
+        return []
+
+    def handle_extra_terminal_key(self, key: str) -> bool:
+        """Override in subclass to handle additional terminal keys.
+        Return True if the key was handled (suppresses default handling)."""
+        return False
+
+    def print_key_help(self):
+        lines = [
+            "",
+            "=== Key bindings ===",
+            "  c        start episode (policy control)",
+            "  C        start episode (single step)",
+            "  r        reset",
+            "  R        reset policy agent",
+            "  d        display robot state",
+            "  x        delete last episode",
+            "  i        print next episode name/path",
+            "  e        export data",
+            "  ?        show this help",
+            "  q        quit",
+            "  s / y / n  stop episode (no flag / success / failure)  [global]",
+        ]
+        extra = self.extra_key_help()
+        if extra:
+            lines.append("  --- task-specific ---")
+            lines.extend(f"  {line}" for line in extra)
+        lines.append("====================")
+        print("\n".join(lines))
 
     def batch_run(self, *args, **kwargs):
         """
