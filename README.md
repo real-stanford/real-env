@@ -114,7 +114,7 @@ After all the setup hardware components above, we provide a checklist to run exp
 
 ## Citation
 
-This repository is developed during the following [research project](https://github.com/real-stanford/gated-memory-policy). If you find it useful, please cite our corresponding paper:
+This repository is initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy) at branch `gated-memory-policy` (commit hash `8f211a4ac4d9eba9bdffa5747fbc4c21145adb23`). If you find it useful, please cite our paper:
 ```latex
 @misc{gao2026gatedmemorypolicy,
   title         = {Gated Memory Policy},
