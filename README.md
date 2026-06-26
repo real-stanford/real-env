@@ -1,4 +1,6 @@
-# Environment Setup
+# Real-Env
+
+Real-Env is a collection of real-world robot controllers and peripherals for robotic manipulation research, initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy) at REALab (Stanford University). Currently, it supports UR5-WSG50 and ARX5 setups, compatible with [UMI](https://github.com/real-stanford/universal_manipulation_interface) and [iPhUMI] data collection devices.
 
 ## Prerequisites
 
