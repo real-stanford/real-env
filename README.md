@@ -130,3 +130,7 @@ This repository is initially developed during research project [Gated Memory Pol
   url           = {https://arxiv.org/abs/2604.18933},
 }
 ```
+
+## Acknowledgements
+
+- Austin Patel contributed bimanual ARX support as part of [Behavior Prompting Policy]
