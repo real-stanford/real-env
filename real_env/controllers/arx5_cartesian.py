@@ -530,8 +530,6 @@ def run_arx5_cartesian():
         cfg.model = model
         if len(sys.argv) > 2:
             cfg.interface_name = f"can{sys.argv[2]}"
-        else:
-            cfg.interface_name = "can0"
     print(cfg)
     OmegaConf.set_struct(cfg, False)
     cfg.config_str = json.dumps(OmegaConf.to_container(cfg, resolve=False))

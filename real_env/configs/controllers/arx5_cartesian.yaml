@@ -1,7 +1,7 @@
 _target_: real_env.controllers.arx5_cartesian.ARX5Cartesian
 
 model: ???
-interface_name: ???
+interface_name: can0
 server_endpoint: tcp://localhost:26000
 cartesian_logger_endpoint: tcp://localhost:45560
 joint_logger_endpoint: tcp://localhost:45561
