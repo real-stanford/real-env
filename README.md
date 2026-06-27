@@ -1,6 +1,6 @@
 # Real-Env
 
-Real-Env is a collection of real-world robot controllers and peripherals for robotic manipulation research, initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy) at REALab (Stanford University). Currently, it supports UR5-WSG50 and ARX5 setups, compatible with [UMI](https://github.com/real-stanford/universal_manipulation_interface) and [iPhUMI] data collection devices.
+Real-Env is a collection of real-world robot controllers and peripherals for robotic manipulation research, initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy) at REALab (Stanford University). Currently, it supports ARX5 setups (including bimanual) and UR5-WSG50, compatible with [UMI](https://github.com/real-stanford/universal_manipulation_interface) and [iPhUMI] data collection devices.
 
 ## Prerequisites
 
@@ -14,7 +14,6 @@ Real-Env is a collection of real-world robot controllers and peripherals for rob
 # Inside the real-env directory
 conda env create -f env.yaml
 conda activate real-env
-pip install -e . # Install real-env as a editable package so that all paths can be resolved
 ```
 
 ## Hardware Setup
@@ -41,13 +40,15 @@ pip install -e . # Install real-env as a editable package so that all paths can 
 1. Follow [arx5-sdk](https://github.com/real-stanford/arx5-sdk) to setup ARX5 controller. Ensure you can run all [test scripts](https://github.com/real-stanford/arx5-sdk?tab=readme-ov-file#test-scripts) successfully.
 2. Follow UMI-on-Legs [3D Printing Guide](https://github.com/real-stanford/umi-on-legs/blob/main/real-wbc/docs/3d_printing.md) and [Assembly Guide](https://github.com/real-stanford/umi-on-legs/blob/main/real-wbc/docs/assembly.md#umi-customization-for-arx5) to install UMI gripper on ARX5.
 3. `conda activate real-env` and run `arx5 <model>`. `<model>` can be `X5_iphumi`, `X5_umi`, `L5_iphumi`, `L5_umi`. Please choose the correct model based on your actual hardware. The robot should reset to home pose if connection is successful. If unable to connect, please run `sudo slcand -o -f -s8 /dev/arxcan0 can0 && sudo ifconfig can0 up` (SLCAN) or `sudo ip link set up can0 type can bitrate 1000000` (candleLight) again.
+4. For bimanual, run `iphumi_arx5_bimanual <model>` using `<model>` based on instructions in the previous step. You will need to set the relative transform between your two arms in [iphumi_arx5_bimanual.yaml](real_env/configs/tasks/iphumi_arx5_bimanual.yaml). Press the `v` key to open a pose viewer showing the relative base to base transforms to verify you have set it correctly.
 > Notice: Sometimes there might be a jump when the robot boots up. This behavior is not reliably reproducible in our setup. Please raise an issue or PR if you can reproduce it.
 
 ### iPhone
 
 1. Follow [iPhUMI] [Will be released soon] to install the iPhone app and print the iPhone mount.
 2. Connect the iphone to the computer through a (at least) **USB3.0** cable. `conda activate real-env` then run `iphone wrist`. If all 3 videos pop up (main, ultrawide, depth), connection is successful. The iPhone UDID will be printed in the terminal.
-3. To connect to multiple iPhones, record the UDID of each iphone and update the `iphone_udid` in `real_env/configs/peripherals/iphone_wrist.yaml` for wrist view and `real_env/configs/peripherals/iphone_third.yaml` for third person view.
+3. To connect to multiple iPhones, record the UDID of each iphone and update the `iphone_udid` in [iphone_wrist.yaml](real_env/configs/peripherals/iphone_wrist.yaml) for wrist view and [iphone_third.yaml](real_env/configs/peripherals/iphone_third.yaml) for third person view.
+4. If you are doing bimanual deployment, then use [iphone_wrist_left.yaml](real_env/configs/peripherals/iphone_wrist_left.yaml) and [iphone_wrist_right.yaml](real_env/configs/peripherals/iphone_wrist_right.yaml) instead.
 
 ### Webcam / GoPro
 
@@ -101,18 +102,19 @@ During experiments, we might accidentally change some configs that leads to diff
 
 After all the setup hardware components above, we provide a checklist to run experiments. Except for the policy server, all other scripts should be run in the `real-env` conda environment and each in a different terminal. When switching checkpoints/experiments, the robot controller, spacemouse, and camera servers does not need to be restarted. Shortcut executables are installed in the `real-env` conda environment, use `which xxx` to find the underlying python script.
 
-1. Launch robot controllers: `ur5`, `wsg50` (or `arx5 <model>` where `<model>` can be `X5_iphumi`, `X5_umi`, `L5_iphumi`, `L5_umi`; if not connected, please run `sudo slcand -o -f -s8 /dev/arxcan0 can0 && sudo ifconfig can0 up` (SLCAN) or `sudo ip link set up can0 type can bitrate 1000000` (candleLight) again.)
+1. Launch robot controllers: `ur5`, `wsg50` (or `arx5 <model>` or `arx5_bimanual <model>` where `<model>` can be `X5_iphumi`, `X5_umi`, `L5_iphumi`, `L5_umi`; if not connected, please run `sudo slcand -o -f -s8 /dev/arxcan0 can0 && sudo ifconfig can0 up` (SLCAN) or `sudo ip link set up can0 type can bitrate 1000000` (candleLight) again.)
 2. Launch spacemouse server: `spacemouse_server`.
 3. Launch camera servers: `iphone wrist` (or `webcam`, `gopro 0`).
 4. Run the policy server in the `imitation-learning-policies` codebase, for example, `cd ../imitation-learning-policies` `conda activate imitation` and then `shell_scripts/serve_policy_ckpt.sh iphumi_place_back_with_correction_diffusion_gated.ckpt` or `shell_scripts/serve_policy_ckpt.sh data/checkpoints/real/umi_multi_diffusion_transformer_large.ckpt`.
-5. Run the **task script**: `iphumi_ur5 flip_and_place_back` or `iphumi_arx5 flip_and_place_back` or `umi_ur5 multi_task` or `umi_arx5 multi_task`. If everything is working, you should be able to teleop the robot with SpaceMouse. The task configs are stored in `real_env/configs/tasks/`.
+5. Run the **task script**: `iphumi_ur5 flip_and_place_back` or `iphumi_arx5 flip_and_place_back` or `umi_ur5 multi_task` or `umi_arx5 multi_task`. If everything is working, you should be able to teleop the robot with SpaceMouse. The task configs are stored in `real_env/configs/tasks/`. If you are using a bimanual config, you can use `l` to switch the SpaceMouse to control the left arm and `;` for right arm.
 6. To reset the robot, press `r` in the **task script terminal**.
 7. To continue policy control, press `c` in the **task script terminal**.
 8. **(Does not have to be in the task script terminal)** To stop policy control and mark success/failure, press `y`/`n` wherever which window is on top; to stop policy control, press `s` there will be a prompt to set success/failure.
 9. To run a single trajectory with policy control, press `C` in the **task script terminal**.
 10. Run `shell_scripts/kill_all_processes.sh` to kill all the processes after the experiment.
 
-
+## Contributions
+We welcome contributions! Feel free to open pull requests to add support for additional robots, camera, sensors, or other additions.
 
 ## Citation
 
@@ -128,3 +130,7 @@ This repository is initially developed during research project [Gated Memory Pol
   url           = {https://arxiv.org/abs/2604.18933},
 }
 ```
+
+## Acknowledgements
+
+- Austin Patel contributed bimanual ARX support as part of [Behavior Prompting Policy]

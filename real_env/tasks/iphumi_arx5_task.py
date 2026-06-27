@@ -8,7 +8,10 @@ import hydra
 import json
 from omegaconf import OmegaConf
 
+from real_env.tasks.base_task import TaskControlMode
 from real_env.tasks.umi_arx5_task import UmiARX5Task
+from real_env.utils.umi_utils import get_downsampled_camera_images
+from robot_utils.pose_utils import get_relative_poses
 
 
 class iPhumiARX5Task(UmiARX5Task):
@@ -19,29 +22,25 @@ class iPhumiARX5Task(UmiARX5Task):
         super().__init__(**kwargs)
 
     def get_observations(self):
-        (
-            images_dict_THWC_RGB,
-            image_timestamps,
-        ) = self.wrist_camera_client.get_latest_images_dict_THWC(1)
+        images_dict_THWC_RGB, camera_timestamps = get_downsampled_camera_images(
+            self.wrist_camera_client,
+            self.policy_agent.image_history_len,
+            self.policy_agent.agent_update_freq_hz,
+            cam_obs_freq_hz=self.policy_agent.cam_obs_freq_hz,
+        )
+        main_camera_timestamps = camera_timestamps["main"]
 
         eef_poses_list: list[npt.NDArray[np.float64]] = []
         gripper_widths_list: list[npt.NDArray[np.float64]] = []
-        print(f"image_timestamps: {image_timestamps}")
+        print(f"main_camera_timestamps: {main_camera_timestamps}")
 
-        # robot_state_timestamps = [
-        #     image_timestamps[0] - 1.0 / self.policy_agent.agent_update_freq_hz,
-        #     image_timestamps[0],
-        # ]
-
-        # HACK: if doesn't include camera latency, policy works much better. Not sure why...
-        # robot_state_timestamps = [
-        #     time.monotonic() - 2.0 / self.policy_agent.agent_update_freq_hz,
-        #     time.monotonic() - 1.0 / self.policy_agent.agent_update_freq_hz,
-        # ]
-
+        if self.match_camera_latency:
+            last_timestamp = main_camera_timestamps[-1]
+        else:
+            last_timestamp = time.monotonic()
         robot_state_timestamps = [
-            time.monotonic() - 1.0 / self.policy_agent.agent_update_freq_hz,
-            time.monotonic() - 0.0 / self.policy_agent.agent_update_freq_hz,
+            last_timestamp - i * (1.0 / self.policy_agent.agent_update_freq_hz)
+            for i in range(self.policy_agent.proprio_history_len - 1, -1, -1)
         ]
 
         for robot_state_timestamp in robot_state_timestamps:
@@ -56,19 +55,29 @@ class iPhumiARX5Task(UmiARX5Task):
         gripper_widths = np.array(gripper_widths_list)  # (N, 1)
 
         observations = {
-            "robot0_eef_xyz_wxyz": eef_poses,
-            "robot0_gripper_width": gripper_widths,
-            "robot0_main_camera": images_dict_THWC_RGB["main"],  # (N, H, W, 3)
-            "robot0_ultrawide_camera": images_dict_THWC_RGB[
-                "ultrawide"
-            ],  # (N, H, W, 3)
-            "robot0_depth_camera": images_dict_THWC_RGB["depth"],  # (N, H, W, 3)
-            "timestamps": image_timestamps,  # (N, )
+            "robot0_eef_xyz_wxyz": eef_poses, # (proprio_history_len, 7)
+            "robot0_gripper_width": gripper_widths, # (proprio_history_len, 1)
+            "robot0_main_camera": images_dict_THWC_RGB["main"],  # (img_horizon, H, W, 3)
+            "robot0_ultrawide_camera": images_dict_THWC_RGB["ultrawide"],  # (img_horizon, H, W, 3)
+            # "robot0_depth_camera": images_dict_THWC_RGB["depth"],  # (img_horizon, H, W, 3)
+            "timestamps": main_camera_timestamps,  # (img_horizon, )
+            "task_name": self.task_name,
         }
 
-        print(f"iPhumiARX5Task get_observations:")
-        for k, v in observations.items():
-            print(f"{k}: {v.shape}")
+        if self.policy_start_eef_xyz_wxyz is None and self.control_mode in (
+            TaskControlMode.POLICY,
+            TaskControlMode.POLICY_SINGLE_STEP,
+        ):
+            self.policy_start_eef_xyz_wxyz = eef_poses[0]
+
+        start_pose = (
+            self.policy_start_eef_xyz_wxyz
+            if self.policy_start_eef_xyz_wxyz is not None
+            else eef_poses[0]
+        )
+        observations["robot0_eef_xyz_wxyz_wrt_start"] = get_relative_poses(
+            eef_poses, start_pose
+        )
 
         return observations
 

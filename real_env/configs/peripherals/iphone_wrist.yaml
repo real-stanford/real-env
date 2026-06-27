@@ -19,15 +19,15 @@ camera_configs:
     width: 960
     height: 720
     fps: 30
-  depth:
-    type: depth
-    peertalk_port: 5557
-    width: 320
-    height: 240
-    fps: 30
+  # depth:
+  #   type: depth
+  #   peertalk_port: 5557
+  #   width: 320
+  #   height: 240
+  #   fps: 30
 
 camera_latency_s: 0.08
 display_resolution_WH:
   - 320
   - 240
-logger_endpoint: tcp://localhost:55555
+logger_endpoint: tcp://localhost:55554

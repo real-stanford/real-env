@@ -12,14 +12,14 @@ project_name: ???
 task_name: ???
 run_name: ${now:%Y-%m-%d}_arx5_<POLICY_NAME>_epoch<POLICY_EPOCH>
 logger_endpoints:
-  right_wrist_camera_0: tcp://localhost:55555
-  right_arm: tcp://localhost:55560
-  right_end_effector: tcp://localhost:55561
-  # third_person_camera_0: tcp://localhost:55558
+  right_wrist_camera_0: tcp://localhost:55554
+  right_arm: tcp://localhost:45560
+  right_end_effector: tcp://localhost:45561
+  # third_person_camera_0: tcp://localhost:55557
 draw_gripper_mask: true
 draw_mirrors_mask: false
 pause_when_policy_inference: false
-arx5_controller_endpoint: tcp://localhost:16701
+arx5_controller_endpoint: tcp://localhost:26000
 arx5_lookahead_time_s: 0.1
 arx5_home_pose_xyz_wxyz: null
 arx5_home_gripper_pos_m: 0.04

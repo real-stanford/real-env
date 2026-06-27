@@ -1,0 +1,8 @@
+defaults:
+  - iphone_wrist
+
+name: right_wrist_camera_0
+server_endpoint: tcp://localhost:16702
+iphone_udid: 00008130-0011185108C1401C
+
+logger_endpoint: tcp://localhost:55556

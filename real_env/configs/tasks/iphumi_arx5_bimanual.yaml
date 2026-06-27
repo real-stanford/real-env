@@ -1,0 +1,55 @@
+defaults:
+  - ../agents@policy_agent: policy_agent
+  - ../agents@spacemouse_agent: spacemouse_agent
+  - _self_
+
+_target_: real_env.tasks.iphumi_arx5_bimanual_task.iPhumiARX5BimanualTask
+
+root_dir: data
+project_name: iphumi_arx5_bimanual
+task_name: none
+prompt_index: 0
+run_name: ${now:%Y-%m-%d}_arx5_bimanual_<POLICY_NAME>_epoch<POLICY_EPOCH>
+logger_endpoints:
+  left_wrist_camera_0: tcp://localhost:55555
+  left_arm: tcp://localhost:45562
+  left_end_effector: tcp://localhost:45563
+  right_wrist_camera_0: tcp://localhost:55556
+  right_arm: tcp://localhost:45564
+  right_end_effector: tcp://localhost:45565
+  # add the following line to also record third person camera footage
+  # third_person_camera_0: tcp://localhost:55557
+
+pause_when_policy_inference: false
+
+arx5_left_controller_endpoint: tcp://localhost:26001
+arx5_left_home_gripper_pos_m: 0.08
+arx5_left_home_pose_xyz_wxyz: [0.32329431, -0.01974965, 0.21857544, -0.42799547, 0.5481659, -0.5713881, 0.43571742]
+
+arx5_right_controller_endpoint: tcp://localhost:26002
+arx5_right_home_gripper_pos_m: 0.08
+arx5_right_home_pose_xyz_wxyz: [0.32329431, -0.01974965, 0.21857544, -0.42799547, 0.5481659, -0.5713881, 0.43571742]
+
+wrist_camera_left_endpoint: tcp://localhost:16701
+wrist_camera_right_endpoint: tcp://localhost:16702
+
+# SE3 transform from right arm's base frame to left arm's base frame (tx_left_right).
+# Row-major 4x4 matrix. Matches tx_left_right / tx_robot1_robot0 in eval_arx5.py.
+# This is the motion geometrically starting in the left arm's base frame and ending in the right arm's base frame. if you are standing behind the arm looking towards the robot then x is away from you, y is left, and z is up. So the right arm is 0.415m to the right of the left arm, and they are facing the same direction.
+tx_left_right_base:
+  - [1.0, 0.0, 0.0,  0.0  ]
+  - [0.0, 1.0, 0.0, -0.415]
+  - [0.0, 0.0, 1.0,  0.0  ]
+  - [0.0, 0.0, 0.0,  1.0  ]
+
+arx5_lookahead_time_s: 0.1
+camera_latency_s: 0.08
+policy_latency_s: 0.1
+match_camera_latency: false
+
+policy_agent:
+  robot_num: 2
+  keep_one_step_dummy_proprio: true
+
+spacemouse_agent:
+  pose_orientation_types: [0]

@@ -1,0 +1,13 @@
+defaults:
+  - arx5_cartesian
+  - _self_
+
+
+model: X5_iphumi
+interface_name: can0
+server_endpoint: tcp://localhost:26001
+cartesian_logger_endpoint: tcp://localhost:45562
+joint_logger_endpoint: tcp://localhost:45563
+robot_name: left_arm
+cartesian_logger_name: left_arm
+joint_logger_name: left_end_effector

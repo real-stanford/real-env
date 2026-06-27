@@ -24,7 +24,7 @@ from real_env.peripherals.base_camera import BaseCameraClient
 from real_env.tasks.base_task import BaseTask, TaskControlMode
 from robot_utils.pose_utils import get_relative_poses
 from robot_utils.time_utils import wait_until
-from real_env.utils.umi_utils import draw_predefined_mask
+from real_env.utils.umi_utils import draw_predefined_mask, get_downsampled_camera_images
 
 from omegaconf import OmegaConf
 import json
@@ -202,37 +202,16 @@ class UmiUR5Task(BaseTask):
                 "or provide camera_endpoint in __init__."
             )
 
-        if self.policy_agent.image_history_len > 1:
-
-            downsample_factor = (
-                self.wrist_camera_client.info["camera_configs"]["main"]["fps"]
-                / self.policy_agent.agent_update_freq_hz
-            )
-            assert (
-                downsample_factor.is_integer()
-            ), f"Downsample factor must be an integer, got {downsample_factor}. {self.wrist_camera_client.info['camera_configs']['main']['fps']=} and {self.policy_agent.agent_update_freq_hz=}"
-            downsample_factor = int(downsample_factor)
-
-            frame_num = (
-                self.policy_agent.image_history_len - 1
-            ) * downsample_factor + 1
-        else:
-            frame_num = 1
-            downsample_factor = 1
         start_time = time.monotonic()
-
-        (
-            images_dict_THWC_RGB,
-            image_timestamps,
-        ) = self.wrist_camera_client.get_latest_images_dict_THWC(frame_num)
-
+        images_dict_THWC_RGB, camera_timestamps = get_downsampled_camera_images(
+            self.wrist_camera_client,
+            self.policy_agent.image_history_len,
+            self.policy_agent.agent_update_freq_hz,
+            cam_obs_freq_hz=self.policy_agent.cam_obs_freq_hz,
+        )
+        image_timestamps = camera_timestamps["main"]
         end_time = time.monotonic()
         print(f"get_latest_images_dict_THWC time: {end_time - start_time}")
-
-        image_timestamps = image_timestamps[::downsample_factor]
-        images_dict_THWC_RGB = {
-            k: v[::downsample_factor] for k, v in images_dict_THWC_RGB.items()
-        }
 
         eef_poses_list: list[npt.NDArray[np.float64]] = []
         gripper_widths_list: list[npt.NDArray[np.float64]] = []
@@ -240,9 +219,7 @@ class UmiUR5Task(BaseTask):
 
         robot_state_timestamps = []
         if self.match_camera_latency:
-            last_timestamp = image_timestamps[
-                0
-            ]  # This should be correct theoretically, but leads to inaccuracy
+            last_timestamp = image_timestamps[-1]
         else:
             last_timestamp = time.monotonic()  # This HACK works for UMI and iPhUMI
         # print(f"{time.monotonic() - last_timestamp=}") # Difference is usually 0.15s
