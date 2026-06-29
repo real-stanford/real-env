@@ -2,6 +2,15 @@
 
 Real-Env is a collection of real-world robot controllers and peripherals for robotic manipulation research, initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy) at REALab (Stanford University). Currently, it supports ARX5 setups (including bimanual) and UR5-WSG50, compatible with [UMI](https://github.com/real-stanford/universal_manipulation_interface) and [iPhUMI](https://github.com/real-stanford/iPhUMI) data collection devices.
 
+## Available Branches
+
+- [gated-memory-policy](https://github.com/real-stanford/real-env/tree/gated-memory-policy) for single arm (UR5 & ARX) [UMI](https://github.com/real-stanford/universal_manipulation_interface) and [iPhUMI](https://github.com/real-stanford/iPhUMI) in-the-wild deployment.
+- [behavior-prompting-policy](https://github.com/real-stanford/real-env/tree/behavior-prompting-policy) for bimanual-ARX [iPhUMI](https://github.com/real-stanford/iPhUMI) experiments (e.g. cloth folding) and behavior prompting.
+
+> Compatibility is not guranteed across branches (experiments for one project might not work in another branch). To reproduce experiments, please check out the corresponding branch for each project.
+> Please keep the main branch README up-to-date and this section updated when new projects are added to this repo.
+
+
 ## Prerequisites
 
 - Our repository is tested on Ubuntu 24.04 and 22.04 Linux desktop/laptop.
@@ -118,7 +127,7 @@ We welcome contributions! Feel free to open pull requests to add support for add
 
 ## Citation
 
-This repository is initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy) at branch [gated-memory-policy](https://github.com/real-stanford/real-env/tree/gated-memory-policy). If you find it useful, please cite our paper:
+This repository is initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy). If you find it useful, please cite our paper:
 ```latex
 @misc{gao2026gatedmemorypolicy,
   title         = {Gated Memory Policy},
