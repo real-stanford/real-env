@@ -1,10 +1,10 @@
 # Real-Env
 
-Real-Env is a collection of real-world robot controllers and peripherals for robotic manipulation research, initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy) at REALab (Stanford University). Currently, it supports ARX5 setups (including bimanual) and UR5-WSG50, compatible with [UMI](https://github.com/real-stanford/universal_manipulation_interface) and [iPhUMI] data collection devices.
+Real-Env is a collection of real-world robot controllers and peripherals for robotic manipulation research, initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy) at REALab (Stanford University). Currently, it supports ARX5 setups (including bimanual) and UR5-WSG50, compatible with [UMI](https://github.com/real-stanford/universal_manipulation_interface) and [iPhUMI](https://github.com/real-stanford/iPhUMI) data collection devices.
 
 ## Prerequisites
 
-- Our repository is only tested on Ubuntu 24.04 Linux desktop/laptop.
+- Our repository is tested on Ubuntu 24.04 and 22.04 Linux desktop/laptop.
 - An NVIDIA GPU is recommended for hardware accelerated video recording (see [robologger](https://github.com/yihuai-gao/robologger))
 - [Miniforge3](https://github.com/conda-forge/miniforge?tab=readme-ov-file#install) or any conda distribution
 
@@ -45,7 +45,7 @@ conda activate real-env
 
 ### iPhone
 
-1. Follow [iPhUMI] [Will be released soon] to install the iPhone app and print the iPhone mount.
+1. Follow [iPhUMI](https://github.com/real-stanford/iPhUMI) to install the iPhone app and print the iPhone mount.
 2. Connect the iphone to the computer through a (at least) **USB3.0** cable. `conda activate real-env` then run `iphone wrist`. If all 3 videos pop up (main, ultrawide, depth), connection is successful. The iPhone UDID will be printed in the terminal.
 3. To connect to multiple iPhones, record the UDID of each iphone and update the `iphone_udid` in [iphone_wrist.yaml](real_env/configs/peripherals/iphone_wrist.yaml) for wrist view and [iphone_third.yaml](real_env/configs/peripherals/iphone_third.yaml) for third person view.
 4. If you are doing bimanual deployment, then use [iphone_wrist_left.yaml](real_env/configs/peripherals/iphone_wrist_left.yaml) and [iphone_wrist_right.yaml](real_env/configs/peripherals/iphone_wrist_right.yaml) instead.
