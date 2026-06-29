@@ -1,6 +1,6 @@
 # Real-Env
 
-Real-Env is a collection of real-world robot controllers and peripherals for robotic manipulation research, initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy) at REALab (Stanford University). Currently, it supports UR5-WSG50 and ARX5 setups, compatible with [UMI](https://github.com/real-stanford/universal_manipulation_interface) and [iPhUMI] data collection devices.
+Real-Env is a collection of real-world robot controllers and peripherals for robotic manipulation research, initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy) at REALab (Stanford University). Currently, it supports UR5-WSG50 and ARX5 setups, compatible with [UMI](https://github.com/real-stanford/universal_manipulation_interface) and [iPhUMI](https://github.com/real-stanford/iPhUMI) data collection devices.
 
 ## Prerequisites
 
@@ -45,7 +45,7 @@ pip install -e . # Install real-env as a editable package so that all paths can 
 
 ### iPhone
 
-1. Follow [iPhUMI] [Will be released soon] to install the iPhone app and print the iPhone mount.
+1. Follow [iPhUMI](https://github.com/real-stanford/iPhUMI) to install the iPhone app and print the iPhone mount.
 2. Connect the iphone to the computer through a (at least) **USB3.0** cable. `conda activate real-env` then run `iphone wrist`. If all 3 videos pop up (main, ultrawide, depth), connection is successful. The iPhone UDID will be printed in the terminal.
 3. To connect to multiple iPhones, record the UDID of each iphone and update the `iphone_udid` in `real_env/configs/peripherals/iphone_wrist.yaml` for wrist view and `real_env/configs/peripherals/iphone_third.yaml` for third person view.
 
@@ -116,7 +116,7 @@ After all the setup hardware components above, we provide a checklist to run exp
 
 ## Citation
 
-This repository is initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy) at branch `gated-memory-policy` (commit hash `b15646d0813e927949ab5843bdf94a670c9db0ed`). If you find it useful, please cite our paper:
+This repository is initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy) at branch `gated-memory-policy`. If you find it useful, please cite our paper:
 ```latex
 @misc{gao2026gatedmemorypolicy,
   title         = {Gated Memory Policy},
