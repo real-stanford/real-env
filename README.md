@@ -133,4 +133,4 @@ This repository is initially developed during research project [Gated Memory Pol
 
 ## Acknowledgements
 
-- Austin Patel contributed bimanual ARX support as part of [Behavior Prompting Policy]
+- Austin Patel contributed bimanual ARX support as part of [Behavior Prompting Policy](https://behavior-prompting.github.io/)
