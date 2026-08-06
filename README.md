@@ -130,13 +130,13 @@ We welcome contributions! Feel free to open pull requests to add support for add
 This repository is initially developed during research project [Gated Memory Policy](https://github.com/real-stanford/gated-memory-policy). If you find it useful, please cite our paper:
 ```latex
 @misc{gao2026gatedmemorypolicy,
-  title         = {Gated Memory Policy},
-  author        = {Yihuai Gao and Jinyun Liu and Shuang Li and Shuran Song},
-  year          = {2026},
-  eprint        = {2604.18933},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.RO},
-  url           = {https://arxiv.org/abs/2604.18933},
+  title={Gated Memory Policy: In-Context Memorization and Adaptation}, 
+  author={Yihuai Gao and Jeff Jinyun Liu and Shuang Li and Shuran Song},
+  year={2026},
+  eprint={2604.18933},
+  archivePrefix={arXiv},
+  primaryClass={cs.RO},
+  url={https://arxiv.org/abs/2604.18933}, 
 }
 ```
 
