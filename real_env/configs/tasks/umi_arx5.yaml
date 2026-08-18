@@ -21,8 +21,8 @@ draw_mirrors_mask: false
 pause_when_policy_inference: false
 arx5_controller_endpoint: tcp://localhost:26000
 arx5_lookahead_time_s: 0.1
-arx5_home_pose_xyz_wxyz: null
-arx5_home_gripper_pos_m: 0.04
+arx5_home_pose_xyz_wxyz: [0.32909051, 0.01269505, 0.18053399, -0.42698597, 0.55724355, -0.57041223, 0.42637131]
+arx5_home_gripper_pos_m: 0.08551553
 wrist_camera_endpoint: tcp://localhost:16700
 third_person_camera_endpoint: ""
 camera_latency_s: 0.08

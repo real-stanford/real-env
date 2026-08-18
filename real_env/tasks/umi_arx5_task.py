@@ -380,6 +380,11 @@ class UmiARX5Task(BaseTask):
         eef_xyz_wxyz = self.arx5_client.get_eef_xyz_wxyz(timestamp=time.monotonic())
         gripper_width = self.arx5_client.get_joint_pos(timestamp=time.monotonic())
 
+        _, spacemouse_buttons = self.spacemouse_agent.spacemouse_client.get_average_state(10)
+        if spacemouse_buttons[0] == 1 and spacemouse_buttons[1] == 1:
+            self.reset()
+            return
+
         if self.last_control_mode == TaskControlMode.POLICY:
             # Re-seed from actual robot state to avoid jumping to last policy target
             self.spacemouse_history_actions = {
@@ -425,6 +430,44 @@ class UmiARX5Task(BaseTask):
         self.spacemouse_history_actions = copy.deepcopy(actions)
 
         self.last_control_mode = TaskControlMode.SPACEMOUSE
+
+    def _go_to_home_pose(self) -> None:
+        if self.arx5_home_pose_xyz_wxyz is None:
+            print("[home] No home pose configured (arx5_home_pose_xyz_wxyz is null).")
+            return
+        print("[home] Moving to home pose ...")
+        move_duration_s = 3.0
+        dt = 0.1
+        start = time.monotonic()
+        eef_deadline = start + move_duration_s + self.arx5_lookahead_time_s
+        grip_deadline = start + move_duration_s
+        while time.monotonic() - start < move_duration_s:
+            self.arx5_client.schedule_eef_traj(
+                eef_traj_xyz_wxyz=self.arx5_home_pose_xyz_wxyz[np.newaxis, :],
+                timestamps=np.array([eef_deadline]),
+                use_relative_timestamps=False,
+            )
+            self.arx5_client.schedule_joint_traj(
+                joint_traj_pos=self.arx5_home_gripper_pos_m[np.newaxis, :],
+                timestamps=np.array([grip_deadline]),
+                use_relative_timestamps=False,
+            )
+            time.sleep(dt)
+        self.spacemouse_history_actions = {
+            "action0_eef_xyz_wxyz": self.arx5_client.get_eef_xyz_wxyz(timestamp=time.monotonic())[np.newaxis, :],
+            "action0_gripper_width": self.arx5_client.get_joint_pos(timestamp=time.monotonic())[np.newaxis, :],
+            "timestamps": np.array([time.monotonic()]),
+        }
+        print("[home] Done.")
+
+    def extra_key_help(self) -> list[str]:
+        return ["h        go to home pose"]
+
+    def handle_extra_terminal_key(self, key: str) -> bool:
+        if key == "h":
+            self._go_to_home_pose()
+            return True
+        return False
 
     def display_robot_state(self):
         eef_xyz_wxyz = self.arx5_client.get_eef_xyz_wxyz(timestamp=time.monotonic())
