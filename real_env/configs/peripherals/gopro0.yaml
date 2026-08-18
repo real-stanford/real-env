@@ -2,7 +2,7 @@ _target_: real_env.peripherals.webcam.WebCam
 
 name: right_wrist_camera_0
 server_endpoint: tcp://localhost:16700
-logger_endpoint: tcp://localhost:55555
+logger_endpoint: tcp://localhost:55554
 camera_latency_s: 0.10
 camera_id: 0
 cam_img_format: NV12
