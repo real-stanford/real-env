@@ -48,9 +48,23 @@ conda activate real-env
 
 1. Follow [arx5-sdk](https://github.com/real-stanford/arx5-sdk) to setup ARX5 controller. Ensure you can run all [test scripts](https://github.com/real-stanford/arx5-sdk?tab=readme-ov-file#test-scripts) successfully.
 2. Follow UMI-on-Legs [3D Printing Guide](https://github.com/real-stanford/umi-on-legs/blob/main/real-wbc/docs/3d_printing.md) and [Assembly Guide](https://github.com/real-stanford/umi-on-legs/blob/main/real-wbc/docs/assembly.md#umi-customization-for-arx5) to install UMI gripper on ARX5.
-3. `conda activate real-env` and run `arx5 <model>`. `<model>` can be `X5_iphumi`, `X5_umi`, `L5_iphumi`, `L5_umi`. Please choose the correct model based on your actual hardware. The robot should reset to home pose if connection is successful. If unable to connect, please run `sudo slcand -o -f -s8 /dev/arxcan0 can0 && sudo ifconfig can0 up` (SLCAN) or `sudo ip link set up can0 type can bitrate 1000000` (candleLight) again.
+3. `conda activate real-env` and run `arx5 <model>`. `<model>` can be `X5_iphumi`, `X5_umi`, `L5_iphumi`, `L5_umi`. Please choose the correct model based on your actual hardware. The robot should reset to home pose if connection is successful. If unable to connect, please run `sudo slcand -o -f -s8 /dev/arxcan0 can0 && sudo ifconfig can0 up` (SLCAN) or `sudo ip link set up can0 type can bitrate 1000000` (candleLight) again. If your CAN interface is not `can0`, pass the port number as a second argument, e.g. `arx5 X5_umi 1` for `can1`.
 4. For bimanual, run `iphumi_arx5_bimanual <model>` using `<model>` based on instructions in the previous step. You will need to set the relative transform between your two arms in [iphumi_arx5_bimanual.yaml](real_env/configs/tasks/iphumi_arx5_bimanual.yaml). Press the `v` key to open a pose viewer showing the relative base to base transforms to verify you have set it correctly.
 > Notice: Sometimes there might be a jump when the robot boots up. This behavior is not reliably reproducible in our setup. Please raise an issue or PR if you can reproduce it.
+
+> Notice: The default gripper calibration values (`gripper_open_readout`, `gripper_width`), defined per model in [include/app/config.h](https://github.com/real-stanford/arx5-sdk/blob/main/include/app/config.h), may not match your specific ARX5 unit. Run `calibrate_gripper()` from [python/examples/calibrate.py](https://github.com/real-stanford/arx5-sdk/blob/main/python/examples/calibrate.py) in arx5-sdk to get the calibration results for your arm, then override them in [ARX5Cartesian.connect](real_env/controllers/arx5_cartesian.py):
+> ```python
+> robot_config = arx5.RobotConfigFactory.get_instance().get_config(self.model)
+> controller_config = arx5.ControllerConfigFactory.get_instance().get_config(
+>     "cartesian_controller", robot_config.joint_dof
+> )
+> robot_config.gripper_open_readout = 5.08  # from calibrate_gripper()
+> robot_config.gripper_width = 0.087  # from calibrate_gripper()
+> self.arx5_cartesian_controller = arx5.Arx5CartesianController(
+>     robot_config, controller_config, self.interface_name
+> )
+> ```
+> This replaces the default `arx5.Arx5CartesianController(self.model, self.interface_name)` call.
 
 ### iPhone
 

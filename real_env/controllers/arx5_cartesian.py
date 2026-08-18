@@ -518,7 +518,7 @@ class ARX5Cartesian(BaseController):
 def run_arx5_cartesian():
     os.environ["HYDRA_FULL_ERROR"] = "1"
     np.set_printoptions(precision=4)
-    assert len(sys.argv) == 2 or len(sys.argv) == 3, "Usage: python run_arx5_cartesian.py <model> [can_interface"
+    assert len(sys.argv) == 2 or len(sys.argv) == 3, "Usage: python run_arx5_cartesian.py <model> [can_interface]"
     model = sys.argv[1]
 
     if model in ["left", "right"]:
