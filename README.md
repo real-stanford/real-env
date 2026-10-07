@@ -5,7 +5,7 @@ Real-Env is a collection of real-world robot controllers and peripherals for rob
 ## Available Branches
 
 - [gated-memory-policy](https://github.com/real-stanford/real-env/tree/gated-memory-policy) for single arm (UR5 & ARX) [UMI](https://github.com/real-stanford/universal_manipulation_interface) and [iPhUMI](https://github.com/real-stanford/iPhUMI) in-the-wild deployment.
-- [behavior-prompting-policy](https://github.com/real-stanford/real-env/tree/behavior-prompting-policy) for bimanual-ARX [iPhUMI](https://github.com/real-stanford/iPhUMI) experiments (e.g. cloth folding) and behavior prompting support for the [Behavior Prompting Policy](https://behavior-prompting.github.io/) paper.
+- [behavior-prompting-policy](https://github.com/real-stanford/real-env/tree/behavior-prompting-policy) for bimanual-ARX [iPhUMI](https://github.com/real-stanford/iPhUMI) experiments (e.g. cloth folding) and behavior prompting support used in [What Enables In-Context Behavior Prompting for Manipulation?](https://behavior-prompting.github.io/).
 
 > Compatibility is not guranteed across branches (experiments for one project might not work in another branch). To reproduce experiments, please check out the corresponding branch for each project.
 > Please keep the main branch README up-to-date and this section updated when new projects are added to this repo.
@@ -157,4 +157,4 @@ This repository is initially developed during research project [Gated Memory Pol
 
 ## Acknowledgements
 
-- Austin Patel contributed bimanual ARX support as part of [Behavior Prompting Policy](https://behavior-prompting.github.io/)
+- Austin Patel contributed bimanual ARX support as part of [What Enables In-Context Behavior Prompting for Manipulation?](https://behavior-prompting.github.io/)
