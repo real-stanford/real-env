@@ -1,0 +1,14 @@
+defaults:
+  - iphumi_arx5_bimanual
+  - _self_
+
+project_name: bimanual_cloth_folding
+
+policy_agent:
+  agent_update_freq_hz: 12
+
+arx5_left_home_pose_xyz_wxyz: [0.33437166, 0.001547, 0.16238343, -0.49584277, 0.5117057, -0.52398928, 0.46661811]
+arx5_right_home_pose_xyz_wxyz: [0.33437166, 0.001547, 0.16238343, -0.49584277, 0.5117057, -0.52398928, 0.46661811]
+
+# logger_endpoints:
+#   third_person_camera_0: tcp://localhost:55557
