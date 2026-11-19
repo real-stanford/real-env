@@ -7,3 +7,5 @@ draw_gripper_mask: false
 project_name: iphumi_arx5
 task_name: none
 pause_when_policy_inference: false
+# Same home pose as the bimanual right arm (iphumi_arx5_bimanual.yaml)
+arx5_home_pose_xyz_wxyz: [0.32329431, -0.01974965, 0.21857544, -0.42799547, 0.5481659, -0.5713881, 0.43571742]

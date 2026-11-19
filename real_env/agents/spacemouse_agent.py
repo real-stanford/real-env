@@ -46,6 +46,7 @@ class SpacemouseAgent(BaseAgent):
         self.control_robot_idx: int = (
             -1
         )  # -1 means controlling all robots simultaneously
+        self._both_buttons_were_pressed: bool = False
 
     def predict_actions(
         self,
@@ -189,6 +190,15 @@ class SpacemouseAgent(BaseAgent):
             print(f"SpacemouseAgent: Switching to simultaneous control of all robots")
         else:
             print(f"SpacemouseAgent: Switching to robot {self.control_robot_idx}")
+
+    def both_buttons_just_pressed(self) -> bool:
+        """True only on the transition where both spacemouse buttons become pressed
+        (rising edge), so holding them down triggers a single event."""
+        _, buttons = self.spacemouse_client.get_latest_state()
+        both_pressed = len(buttons) >= 2 and buttons[0] == 1 and buttons[1] == 1
+        just_pressed = both_pressed and not self._both_buttons_were_pressed
+        self._both_buttons_were_pressed = both_pressed
+        return just_pressed
 
     def reset(self):
         pass

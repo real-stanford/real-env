@@ -176,6 +176,54 @@ class UmiARX5Task(BaseTask):
             "timestamps": np.array([time.monotonic()]),
         }
 
+    def extra_key_help(self) -> list[str]:
+        return ["h        go to home pose"]
+
+    def handle_extra_terminal_key(self, key: str) -> bool:
+        if key == "h":
+            self._go_to_home_pose()
+            return True
+        return False
+
+    def _go_to_home_pose(self) -> None:
+        """Move the arm to arx5_home_pose_xyz_wxyz and fully open the gripper
+        (press 'h'). Blocks for ~3 s."""
+        if self.arx5_home_pose_xyz_wxyz is None:
+            print("[home] No home pose configured (arx5_home_pose_xyz_wxyz is null).")
+            return
+        print("[home] Moving to home pose ...")
+        move_duration_s = 3.0
+        dt = 0.1
+        start = time.monotonic()
+        eef_deadline = start + move_duration_s + self.arx5_lookahead_time_s
+        grip_deadline = start + move_duration_s
+        # Always fully open the gripper (same max width the spacemouse allows).
+        open_gripper_pos_m = np.array([self.spacemouse_agent.gripper_width_m])
+        while time.monotonic() - start < move_duration_s:
+            self.arx5_client.schedule_eef_traj(
+                eef_traj_xyz_wxyz=self.arx5_home_pose_xyz_wxyz[np.newaxis, :],
+                timestamps=np.array([eef_deadline]),
+                use_relative_timestamps=False,
+            )
+            self.arx5_client.schedule_joint_traj(
+                joint_traj_pos=open_gripper_pos_m[np.newaxis, :],
+                timestamps=np.array([grip_deadline]),
+                use_relative_timestamps=False,
+            )
+            time.sleep(dt)
+        # Re-seed spacemouse control from the actual post-move state.
+        self.last_control_timestamp = time.monotonic()
+        self.spacemouse_history_actions = {
+            "action0_eef_xyz_wxyz": self.arx5_client.get_eef_xyz_wxyz(
+                timestamp=time.monotonic()
+            )[np.newaxis, :],
+            "action0_gripper_width": self.arx5_client.get_joint_pos(
+                timestamp=time.monotonic()
+            )[np.newaxis, :],
+            "timestamps": np.array([time.monotonic()]),
+        }
+        print("[home] Done.")
+
     def get_observations(self):
         if self.wrist_camera_client is None:
             raise RuntimeError(
@@ -377,6 +425,11 @@ class UmiARX5Task(BaseTask):
         return processed_history_actions
 
     def run_spacemouse_control(self):
+        if self.spacemouse_agent.both_buttons_just_pressed():
+            print("Both spacemouse buttons pressed: resetting arm to home configuration")
+            self.reset()
+            return
+
         eef_xyz_wxyz = self.arx5_client.get_eef_xyz_wxyz(timestamp=time.monotonic())
         gripper_width = self.arx5_client.get_joint_pos(timestamp=time.monotonic())
 
